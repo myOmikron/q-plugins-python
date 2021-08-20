@@ -22,9 +22,13 @@ def list_plugins(config):
                 ).replace("/", ".")
                 try:
                     imported = importlib.import_module(f"plugins.{import_path}")
-                    print(f"{import_path}:")
-                    print(f"\t{imported.__help__}")
-                except ModuleNotFoundError or AttributeError:
+                except ModuleNotFoundError:
+                    continue
+                try:
+                    if not callable(getattr(imported, "execute", None)):
+                        raise AttributeError("Function execute is missing")
+                    print(f"{import_path}:\n\t{imported.__help__}")
+                except AttributeError:
                     continue
     exit(0)
 
