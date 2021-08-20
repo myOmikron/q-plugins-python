@@ -102,7 +102,7 @@ if __name__ == '__main__':
         action="store",
         dest="install_requirements",
         help="List plugins to install the requirements for. \
-             If None is listed, requirements for all plugins are installed"
+             If None are listed, requirements for all plugins are installed"
     )
     c = parser.parse_known_args()[0]
     main(c)
