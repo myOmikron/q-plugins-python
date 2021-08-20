@@ -6,6 +6,15 @@ import re
 from collections import ChainMap
 
 
+def _check_plugin(plugin):
+    if not callable(getattr(plugin, "execute", None)):
+        raise AttributeError("Function execute is missing")
+    if getattr(plugin, "__requirements__", None) is None:
+        raise AttributeError("Parameter __requirements__ is missing")
+    if getattr(plugin, "__help__", None) is None:
+        raise AttributeError("Parameter __help__ is missing")
+
+
 def _traverse_plugin_tree():
     plugin_dir = os.path.dirname(os.path.abspath(__file__))
     plugin_list = {}
@@ -25,10 +34,7 @@ def _traverse_plugin_tree():
                 except ModuleNotFoundError:
                     continue
                 try:
-                    if not callable(getattr(imported, "execute", None)):
-                        raise AttributeError("Function execute is missing")
-                    if getattr(imported, "__requirements__", None) is None:
-                        raise AttributeError("Parameter __requirements__ is missing")
+                    _check_plugin(imported)
                     plugin_list[import_path] = imported
                 except AttributeError:
                     continue
@@ -44,15 +50,25 @@ def list_plugins(config):
 
 
 def execute_plugin(config):
-    pattern = re.compile(r"(\w\.)*\w")
-    if not pattern.match(config.plugin):
+    pattern = re.compile(r"^(\w+\.)*\w+$")
+    if not pattern.fullmatch(config.plugin):
         print("Plugin descriptor is not valid.")
         exit(1)
     try:
         imported = importlib.import_module(f"plugins.{config.plugin}")
+    except ModuleNotFoundError:
+        print("Module was not found")
+        exit(1)
+    try:
+        _check_plugin(imported)
+    except AttributeError:
+        print("Plugin is missing required attributes or functions")
+        exit(1)
+    try:
         imported.execute()
-    except ModuleNotFoundError or AttributeError:
-        print("Module is not available or is corrupt")
+    except ModuleNotFoundError:
+        print("There are missing dependencies for this module. The module lists the following dependencies:")
+        print("".join([f"\t- {x}\n" for x in imported.__requirements__.split("\n") if x]).rstrip())
         exit(1)
 
 
