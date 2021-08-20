@@ -58,7 +58,7 @@ __requirements__ = """
 """
 
 
-def execute():
+def execute(utils):
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--hostname",
@@ -87,4 +87,6 @@ def execute():
     
     # Write your own code here.
     # It is important to import packages, which aren't part of the standard lib, locally.
+
+    utils.build_output(state=utils.OutputState.OK)
 ```

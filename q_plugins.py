@@ -53,23 +53,28 @@ def execute_plugin(config):
     pattern = re.compile(r"^(\w+\.)*\w+$")
     if not pattern.fullmatch(config.plugin):
         print("Plugin descriptor is not valid.")
-        exit(1)
+        exit(3)
     try:
         imported = importlib.import_module(f"plugins.{config.plugin}")
     except ModuleNotFoundError:
         print("Module was not found")
-        exit(1)
+        exit(3)
     try:
         _check_plugin(imported)
     except AttributeError:
         print("Plugin is missing required attributes or functions")
-        exit(1)
+        exit(3)
+    utils = importlib.import_module("utils")
     try:
-        imported.execute()
-    except ModuleNotFoundError:
-        print("There are missing dependencies for this module. The module lists the following dependencies:")
-        print("".join([f"\t- {x}\n" for x in imported.__requirements__.split("\n") if x]).rstrip())
-        exit(1)
+        try:
+            imported.execute(utils)
+        except ModuleNotFoundError as err:
+            print(err)
+            print("There are missing dependencies for this module. The module lists the following dependencies:")
+            print("".join([f"\t- {x}\n" for x in imported.__requirements__.split("\n") if x]).rstrip())
+            exit(3)
+    except Exception:
+        utils.build_output(state=utils.OutputState.UNKNOWN)
 
 
 def install_requirements(config):
