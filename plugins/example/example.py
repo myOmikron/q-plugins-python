@@ -38,3 +38,6 @@ def execute():
         help="Critical threshold in percent. Default: %(default)s"
     )
     config = parser.parse_known_args()[0]
+
+    # Write your own code here.
+    # It is important to import packages, which aren't part of the standard lib, locally.
