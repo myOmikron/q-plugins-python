@@ -14,11 +14,25 @@ example.example:
 - Use plugin:
 
 ```bash
-$ # After --plugin has to be a valid identifier to import the plugin. 
+# After --plugin has to be a valid identifier to import the plugin. 
 $ ./q_plugins.py --plugin example.example
 usage: q_plugins.py [-h] --hostname HOSTNAME [--warning WARNING] [--critical CRITICAL]
 q_plugins.py: error: the following arguments are required: --hostname
 # The help message above originates from the example plugin.
+```
+
+- Install dependencies for plugin(s):
+
+```bash
+# If --install-requirements is invoked without any subsequent arguments, 
+# dependencies for all plugins are installed
+$ ./q_plugins.py --install-requirements
+[... pip output ...]
+
+# To only install the dependencies for specific plugins, state them after --install-requirements.
+# Multiple arguments allowed
+$ ./q_plugins.py --install-requirements example.example 
+[... pip output ...] 
 ```
 
 ## Writing own plugins
