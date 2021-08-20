@@ -1,6 +1,15 @@
 import argparse
 
-__help__ = """A demo plugin to demonstrate how plugins are added"""
+# As this help may be printed on consoles, consider to use multiline strings.
+__help__ = """A demo plugin to demonstrate how plugins are added.
+Provides some basic arguments to test.
+"""
+
+# Specify requirements for your plugin here.
+# Leave empty if you don't need any requirements, don't remove the attribute.
+__requirements__ = """
+
+"""
 
 
 def execute():

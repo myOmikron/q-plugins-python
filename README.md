@@ -32,7 +32,16 @@ The plugin has to have a `.py` file extension. `__init__.py` are ignored at ever
 ```python
 import argparse
 
-__help__ = "Short description of the plugin. Will be displayed when using --list-plugins option"
+# As this help may be printed on consoles, consider to use multiline strings.
+__help__ = """A demo plugin to demonstrate how plugins are added.
+Provides some basic arguments to test.
+"""
+
+# Specify requirements for your plugin here.
+# Leave empty if you don't need any requirements, don't remove the attribute.
+__requirements__ = """
+
+"""
 
 
 def execute():
@@ -60,10 +69,5 @@ def execute():
         default=90,
         help="Critical threshold in percent. Default: %(default)s"
     )
-    
-    # It is important to use parse_known_args instead of parse_args 
-    # as q_plugins.py uses argparse as well.
     config = parser.parse_known_args()[0]
-
-    # Write your own code here
 ```
