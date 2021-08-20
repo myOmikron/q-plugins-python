@@ -85,7 +85,7 @@ def install_requirements(config):
     if not requirement_list:
         print("There are no requirements listed")
         exit(0)
-    os.system(f"/usr/bin/env python3 -m pip install -U {' '.join(requirement_list)} --user")
+    os.system(f"/usr/bin/env python3 -m pip install -U {' '.join(requirement_list)} {'--user' if config.user else ''}")
     exit(0)
 
 
@@ -118,7 +118,13 @@ if __name__ == '__main__':
         action="store",
         dest="install_requirements",
         help="List plugins to install the requirements for. \
-             If None are listed, requirements for all plugins are installed"
+              If None are listed, requirements for all plugins are installed"
+    )
+    parser.add_argument(
+        "--install-user",
+        action="store_true",
+        dest="user",
+        help="Specify if you want to install with the --user option with pip"
     )
     c = parser.parse_known_args()[0]
     main(c)
