@@ -69,7 +69,7 @@ def execute_plugin(config):
     try:
         try:
             imported.execute(utils, config.debug)
-        except ModuleNotFoundError as err:
+        except ModuleNotFoundError:
             print("There are missing dependencies for this module. The module lists the following dependencies:")
             print("".join([f"\t- {x}\n" for x in imported.__requirements__.split("\n") if x]).rstrip())
             exit(3)
