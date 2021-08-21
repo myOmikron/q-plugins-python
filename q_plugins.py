@@ -3,6 +3,7 @@ import argparse
 import importlib
 import os
 import re
+import traceback
 from collections import ChainMap
 
 
@@ -69,12 +70,14 @@ def execute_plugin(config):
         try:
             imported.execute(utils)
         except ModuleNotFoundError as err:
-            print(err)
             print("There are missing dependencies for this module. The module lists the following dependencies:")
             print("".join([f"\t- {x}\n" for x in imported.__requirements__.split("\n") if x]).rstrip())
             exit(3)
-    except Exception:
-        utils.build_output(state=utils.OutputState.UNKNOWN)
+    except Exception as err:
+        utils.build_output(
+            state=utils.OutputState.UNKNOWN,
+            output="".join(traceback.format_tb(err.__traceback__))
+        )
 
 
 def install_requirements(config):
