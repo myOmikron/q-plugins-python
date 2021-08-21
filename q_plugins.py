@@ -68,16 +68,19 @@ def execute_plugin(config):
     utils = importlib.import_module("utils")
     try:
         try:
-            imported.execute(utils)
+            imported.execute(utils, config.debug)
         except ModuleNotFoundError as err:
             print("There are missing dependencies for this module. The module lists the following dependencies:")
             print("".join([f"\t- {x}\n" for x in imported.__requirements__.split("\n") if x]).rstrip())
             exit(3)
     except Exception as err:
-        utils.build_output(
-            state=utils.OutputState.UNKNOWN,
-            output="".join(traceback.format_tb(err.__traceback__))
-        )
+        if config.debug:
+            print("".join(traceback.format_tb(err.__traceback__)), type(err))
+        else:
+            utils.build_output(
+                state=utils.OutputState.UNKNOWN,
+                output="".join(traceback.format_tb(err.__traceback__))
+            )
 
 
 def install_requirements(config):
@@ -133,6 +136,11 @@ if __name__ == '__main__':
         action="store_true",
         dest="user",
         help="Specify if you want to install with the --user option with pip"
+    )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Specify to enable debugging mode; More but not json formatted output will appear"
     )
     c = parser.parse_known_args()[0]
     main(c)

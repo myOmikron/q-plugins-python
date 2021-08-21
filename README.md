@@ -58,7 +58,7 @@ __requirements__ = """
 """
 
 
-def execute(utils):
+def execute(utils, debug=False):
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--hostname",
