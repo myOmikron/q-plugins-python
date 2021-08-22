@@ -71,7 +71,7 @@ def execute_plugin(config):
             imported.execute(utils, config.debug)
         except ModuleNotFoundError:
             print("There are missing dependencies for this module. The module lists the following dependencies:")
-            print("".join([f"\t- {x}\n" for x in imported.__requirements__.split("\n") if x]).rstrip())
+            print("".join([f"\t- {x}\n" for x in imported.__requirements__]).rstrip())
             exit(3)
     except Exception as err:
         if config.debug:
@@ -90,9 +90,9 @@ def install_requirements(config):
         {x: all_plugins[x]} for x in all_plugins if x in config.install_requirements
     ]))
     for plugin in search_plugins.values():
-        for line in plugin.__requirements__.split("\n"):
-            if line and line not in requirement_list:
-                requirement_list.append(line)
+        for requirement in plugin.__requirements__:
+            if requirement not in requirement_list:
+                requirement_list.append(requirement)
     if not requirement_list:
         print("There are no requirements listed")
         exit(0)

@@ -7,9 +7,7 @@ Provides some basic arguments to test.
 
 # Specify requirements for your plugin here.
 # Leave empty if you don't need any requirements, don't remove the attribute.
-__requirements__ = """
-
-"""
+__requirements__ = []
 
 
 def execute(utils, debug=False):
@@ -42,4 +40,4 @@ def execute(utils, debug=False):
     # Write your own code here.
     # It is important to import packages, which aren't part of the standard lib, locally.
 
-    utils.build_output(state=utils.OutputState.OK)
+    utils.build_output(state=utils.OutputState.OK, output="Example plugins returns OK")

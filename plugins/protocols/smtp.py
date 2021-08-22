@@ -5,7 +5,7 @@ import time
 from datetime import datetime, timedelta
 
 __help__ = "Module to check smtp"
-__requirements__ = "cryptography"
+__requirements__ = ["cryptography"]
 
 
 def add_common_args(parser):
