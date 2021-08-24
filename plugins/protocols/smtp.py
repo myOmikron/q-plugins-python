@@ -36,6 +36,7 @@ def add_common_args(parser):
 
 def mode_connect(utils, debug):
     parser = argparse.ArgumentParser()
+    add_common_args(parser)
     parser.add_argument(
         "--start-tls",
         action="store_true",
