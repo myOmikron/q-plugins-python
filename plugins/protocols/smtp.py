@@ -60,7 +60,7 @@ def mode_connect(utils, debug):
                 if config.start_tls:
                     client.starttls()
                 res = client.noop()
-        connection_time = round(time.time() - start, 2)
+        connection_time = round(time.time() - start, 3)
         if res == (250, b'2.0.0 Ok'):
             utils.build_output(
                 state=utils.OutputState.OK, output=f"Connection to {config.hostname} established.",
@@ -127,7 +127,7 @@ def mode_login(utils, debug):
     except smtplib.SMTPAuthenticationError:
         # Set res to 535 as that's the code for Authentication failed in SMTP
         res = (535,)
-    connection_time = round(time.time() - start, 2)
+    connection_time = round(time.time() - start, 3)
     if res == (235, b'2.7.0 Authentication successful'):
         utils.build_output(
             state=utils.OutputState.OK, output=f"Authentication successful",
