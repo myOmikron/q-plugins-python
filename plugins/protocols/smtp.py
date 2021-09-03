@@ -10,9 +10,9 @@ __requirements__ = ["cryptography"]
 
 def add_common_args(parser):
     parser.add_argument(
-        "--hostname", "-H",
+        "--hostaddress", "-H",
         action="store",
-        dest="hostname",
+        dest="hostaddress",
         required=True,
         help="Hostname, IP or domain of the target"
     )
@@ -53,17 +53,17 @@ def mode_connect(utils, debug):
     start = time.time()
     try:
         if config.ssl:
-            with smtplib.SMTP_SSL(host=config.hostname, port=config.port, timeout=config.timeout) as client:
+            with smtplib.SMTP_SSL(host=config.hostaddress, port=config.port, timeout=config.timeout) as client:
                 res = client.noop()
         else:
-            with smtplib.SMTP(host=config.hostname, port=config.port, timeout=config.timeout) as client:
+            with smtplib.SMTP(host=config.hostaddress, port=config.port, timeout=config.timeout) as client:
                 if config.start_tls:
                     client.starttls()
                 res = client.noop()
         connection_time = round(time.time() - start, 3)
         if res == (250, b'2.0.0 Ok'):
             utils.build_output(
-                state=utils.OutputState.OK, output=f"Connection to {config.hostname} established.",
+                state=utils.OutputState.OK, output=f"Connection to {config.hostaddress} established.",
                 datasets=[
                     utils.build_dataset(name="Connection time", value=connection_time)
                 ]
@@ -71,13 +71,13 @@ def mode_connect(utils, debug):
         else:
             utils.build_output(
                 state=utils.OutputState.CRITICAL,
-                output=f"Connection to {config.hostname} established, but response was {str(res)}",
+                output=f"Connection to {config.hostaddress} established, but response was {str(res)}",
                 datasets=[
                     utils.build_dataset(name="Connection time", value=connection_time)
                 ]
             )
     except smtplib.SMTPServerDisconnected:
-        utils.build_output(state=utils.OutputState.UNKNOWN, output=f"Connection to {config.hostname} timed out")
+        utils.build_output(state=utils.OutputState.UNKNOWN, output=f"Connection to {config.hostaddress} timed out")
 
 
 def mode_login(utils, debug):
@@ -114,15 +114,15 @@ def mode_login(utils, debug):
     try:
         try:
             if config.ssl:
-                with smtplib.SMTP_SSL(host=config.hostname, port=config.port, timeout=config.timeout) as client:
+                with smtplib.SMTP_SSL(host=config.hostaddress, port=config.port, timeout=config.timeout) as client:
                     res = client.login(config.smtp_user, config.smtp_password)
             else:
-                with smtplib.SMTP(host=config.hostname, port=config.port, timeout=config.timeout) as client:
+                with smtplib.SMTP(host=config.hostaddress, port=config.port, timeout=config.timeout) as client:
                     res = client.login(config.smtp_user, config.smtp_password)
         except smtplib.SMTPServerDisconnected:
             utils.build_output(
                 state=utils.OutputState.UNKNOWN,
-                output=f"Connection to {config.hostname} timed out."
+                output=f"Connection to {config.hostaddress} timed out."
             )
     except smtplib.SMTPAuthenticationError:
         # Set res to 535 as that's the code for Authentication failed in SMTP
@@ -194,7 +194,7 @@ def mode_sendmail(utils, debug):
     try:
         try:
             if config.ssl:
-                with smtplib.SMTP_SSL(host=config.hostname, port=config.port, timeout=config.timeout) as client:
+                with smtplib.SMTP_SSL(host=config.hostaddress, port=config.port, timeout=config.timeout) as client:
                     res = client.login(config.smtp_user, config.smtp_password)
                     if res[0] == 235:
                         res = client.sendmail(config.smtp_from, config.smtp_to, config.smtp_msg.replace("\\n", "\n"))
@@ -209,7 +209,7 @@ def mode_sendmail(utils, debug):
                                 output=f"Message could not be sent: {res}"
                             )
             else:
-                with smtplib.SMTP(host=config.hostname, port=config.port, timeout=config.timeout) as client:
+                with smtplib.SMTP(host=config.hostaddress, port=config.port, timeout=config.timeout) as client:
                     if config.start_tls:
                         client.starttls()
                     res = client.login(config.smtp_user, config.smtp_password)
@@ -233,7 +233,7 @@ def mode_sendmail(utils, debug):
     except smtplib.SMTPServerDisconnected:
         utils.build_output(
             state=utils.OutputState.UNKNOWN,
-            output=f"Connection to {config.hostname} timed out."
+            output=f"Connection to {config.hostaddress} timed out."
         )
 
 
@@ -273,15 +273,15 @@ def mode_certificate(utils, debug):
     config = parser.parse_known_args()[0]
     try:
         if config.ssl:
-            with smtplib.SMTP_SSL(host=config.hostname, port=config.port, timeout=config.timeout) as client:
+            with smtplib.SMTP_SSL(host=config.hostaddress, port=config.port, timeout=config.timeout) as client:
                 cert_decoded = x509.load_der_x509_certificate(client.sock.getpeercert(binary_form=True))
         else:
-            with smtplib.SMTP(host=config.hostname, port=config.port, timeout=config.timeout) as client:
+            with smtplib.SMTP(host=config.hostaddress, port=config.port, timeout=config.timeout) as client:
                 # starttls can be called, because mode certificate use either --ssl or --start-tls as options
                 client.starttls()
                 cert_decoded = x509.load_der_x509_certificate(client.sock.getpeercert(binary_form=True))
     except socket.timeout:
-        utils.build_output(state=utils.OutputState.UNKNOWN, output=f"Connection to {config.hostname} timed out")
+        utils.build_output(state=utils.OutputState.UNKNOWN, output=f"Connection to {config.hostaddress} timed out")
     now = datetime.utcnow()
     critical = now + timedelta(days=config.critical_expiry)
     critical_due = cert_decoded.not_valid_after - critical

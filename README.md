@@ -59,9 +59,9 @@ __requirements__ = []
 def execute(utils, debug=False):
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--hostname",
+        "--hostaddress",
         action="store",
-        dest="hostname",
+        dest="hostaddress",
         required=True,
         help="Hostname of the target"
     )
